@@ -1,0 +1,24 @@
+name: log-watcher
+version: 0.1.0
+
+authors:
+  - weaming <garden.yuen@gmail.com>
+
+dependencies:
+  kemal:
+    github: kemalcr/kemal
+  slang:
+    github: jeromegn/slang
+  kilt:
+    github: jeromegn/kilt
+  inotify:
+    github: petoem/inotify.cr
+    version: 1.0.0
+
+targets:
+  log-watcher:
+    main: src/log_watcher.cr
+
+crystal: 0.28.0
+
+license: MIT
