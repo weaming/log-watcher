@@ -2,48 +2,10 @@ require "uri"
 require "http"
 
 require "kilt/slang"
-require "inotify"
-require "inotify/watcher"
 
 require "./helper"
 require "./server"
-
-class WatchMux
-  getter path : String
-  getter wsList : Array(HTTP::WebSocket)
-  getter watcher : Inotify::Watcher
-
-  def initialize(@path, @wsList)
-    @watcher = Inotify.watch @path do |event|
-      send_all "#{event}"
-    end
-  end
-
-  def append(socket : HTTP::WebSocket)
-    @wsList << socket
-  end
-
-  def send_all(msg : String)
-    @wsList.each do |x|
-      if x.closed?
-        @wsList.delete x
-        close_if_all_disconnected
-      else
-        x.send msg
-      end
-    end
-  end
-
-  def close_if_all_disconnected
-    if @wsList.size == 0
-      @watcher.close
-    end
-  end
-
-  def enabled? : Bool
-    @watcher.@enabled
-  end
-end
+require "./watch_mux"
 
 module LogWatcher
   class Renderer
@@ -69,7 +31,7 @@ module LogWatcher
   end
 
   class WatcherManager
-    getter mapping = {} of String => WatchMux
+    # getter mapping = {} of String => WatchMux
 
     def watch(file : String, socket : HTTP::WebSocket)
       if @mapping.has_key? file && !mapping[file].enabled?

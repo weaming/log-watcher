@@ -13,7 +13,6 @@ dependencies:
     github: jeromegn/kilt
   inotify:
     github: petoem/inotify.cr
-    version: 1.0.0
 
 targets:
   log-watcher:
