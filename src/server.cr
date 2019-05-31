@@ -1,12 +1,9 @@
 require "kemal"
+require "./url_fs_map"
 
 module LogWatcher
-  def self.unifyPath(path : String) : String
-    if path == ""
-      path = "."
-    end
-    path
-  end
+  @@html_map = URLFileSystemMap::UF.new "/", ""
+  @@ws_map = URLFileSystemMap::UF.new "/ws/", ""
 
   def self.serve_http(port : Int32?)
     watcherMgr = WatcherManager.new
@@ -16,8 +13,8 @@ module LogWatcher
     end
 
     get "/*" do |env|
-      path = env.request.path[1..]
-      path = unifyPath(path)
+      req_path = env.request.path
+      path = @@html_map.get_fs_path req_path
 
       if File.file?(path)
         # render html page to display websocket messages
@@ -39,9 +36,9 @@ module LogWatcher
       end
     end
 
-    ws "/*" do |socket, env|
-      path = env.request.path[1..]
-      path = unifyPath(path)
+    ws "/ws/*" do |socket, env|
+      req_path = env.request.path
+      path = @@ws_map.get_fs_path req_path
 
       if File.file?(path)
         # watch file and send appended lines in daemon

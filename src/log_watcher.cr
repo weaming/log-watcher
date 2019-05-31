@@ -30,15 +30,27 @@ module LogWatcher
     end
   end
 
+  # manage WatchMux
   class WatcherManager
-    # getter mapping = {} of String => WatchMux
+    getter mapping = {} of String => WatchMux
 
     def watch(file : String, socket : HTTP::WebSocket)
-      if @mapping.has_key? file && !mapping[file].enabled?
-        @mapping[file].append socket
-      else
-        @mapping[file] = WatchMux.new(file, [socket])
+      file = Path.posix(file).expand.to_s
+
+      # send exists log
+      position = 0
+      LogWatcher.read_appended file, 0 do |p, line|
+        position = p
+        socket.send line
       end
+
+      if @mapping.has_key? file
+        if !mapping[file].enabled?
+          @mapping[file].append socket
+          return
+        end
+      end
+      @mapping[file] = WatchMux.new(file, [socket], position)
     end
   end
 

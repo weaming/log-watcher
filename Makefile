@@ -4,7 +4,7 @@ watch:
 	watchexec --exts slang,cr,yml -r -s SIGINT make live-http
 
 live-http: build
-	./bin/log-watcher . 9000
+	./bin/log-watcher . 21400
 
 build:
 	shards build -v
