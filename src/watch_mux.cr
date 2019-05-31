@@ -32,7 +32,11 @@ module LogWatcher
           @wsList.delete x
           close_if_all_disconnected
         else
-          x.send msg
+          begin
+            x.send msg
+          rescue ex
+            puts ex
+          end
         end
       end
     end

@@ -7,7 +7,7 @@ live-http: build
 	./bin/log-watcher . 21400
 
 build:
-	shards build -v
+	shards build -v --release
 
 install:
 	shards build -v --release && mv ./bin/log-watcher /usr/local/bin

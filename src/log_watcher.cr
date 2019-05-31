@@ -40,8 +40,13 @@ module LogWatcher
       # send exists log
       position = 0
       LogWatcher.read_appended file, 0 do |p, line|
+        begin
+          socket.send line
+        rescue ex
+          puts ex
+          return
+        end
         position = p
-        socket.send line
       end
 
       if @mapping.has_key? file
