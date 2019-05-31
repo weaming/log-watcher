@@ -60,8 +60,7 @@ module LogWatcher
   end
 
   def self.main
-    root = Helper::CLI.argv_first("missing directory to watch")
-    port = Helper::CLI.argv_n?(2, "8000").to_i32
+    port = Helper::CLI.argv_n?(1, "8000").to_i32
     serve_http port
   end
 end
