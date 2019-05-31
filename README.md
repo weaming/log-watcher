@@ -10,6 +10,8 @@ cd log-watcher
 make install
 ```
 
+or [cross-complilation](https://crystal-lang.org/reference/syntax_and_semantics/cross-compilation.html)
+
 ## Usage
 
 ```
