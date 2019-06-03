@@ -34,12 +34,11 @@ module LogWatcher
   class WatcherManager
     getter mapping = {} of String => WatchMux
 
-    def watch(file : String, socket : HTTP::WebSocket)
+    def watch(file : String, socket : HTTP::WebSocket, position = 0, last = 0)
       file = Path.posix(file).expand.to_s
 
       # send exists log
-      position = 0
-      LogWatcher.read_appended file, 0 do |p, line|
+      LogWatcher.read_appended file, position, last do |p, line|
         begin
           socket.send line
         rescue ex

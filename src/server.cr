@@ -5,6 +5,22 @@ module LogWatcher
   @@html_map = URLFileSystemMap::UF.new "/", ""
   @@ws_map = URLFileSystemMap::UF.new "/ws/", ""
 
+  def self.parse_query(s : String?, default : Int64 = 0) : Int64
+    if s == ""
+      return default
+    end
+    begin
+      if s.nil?
+        return default
+      else
+        return s.to_i64
+      end
+    rescue ex
+      puts ex
+      return default
+    end
+  end
+
   def self.serve_http(port : Int32?)
     watcherMgr = WatcherManager.new
 
@@ -42,7 +58,10 @@ module LogWatcher
 
       if File.file?(path)
         # watch file and send appended lines in daemon
-        watcherMgr.watch(path, socket)
+        qry = env.request.query_params
+        start = parse_query qry["start"]?, 1
+        last = parse_query qry["last"]?
+        watcherMgr.watch(path, socket, start - 1, last)
       elsif File.directory?(path)
         socket.send "#{path} is a directory"
         socket.close

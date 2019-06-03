@@ -6,7 +6,7 @@ module LogWatcher
   class WatchMux
     getter path : String
     getter wsList : Array(HTTP::WebSocket)
-    getter position = 0
+    getter position : (Int32 | Int64) = 0
 
     # getter watcher : Inotify::Watcher
 
@@ -14,7 +14,7 @@ module LogWatcher
       @watcher = Inotify.watch @path do |event|
         puts "#{Time.now} #{event}"
         if event.type == Inotify::Event::Type::MODIFY
-          LogWatcher.read_appended @path, @position do |position, line|
+          LogWatcher.read_appended @path, @position, 0 do |position, line|
             send_all line
             @position = position
           end
@@ -52,9 +52,16 @@ module LogWatcher
     end
   end
 
-  def self.read_appended(path : String, position)
+  def self.read_appended(path : String, position, last)
     i = 0
-    File.each_line path do |line|
+    lines = File.read_lines path
+    if last > 0 && lines.size > last
+      position = lines.size - last
+      i = position
+      lines = lines.last last
+    end
+
+    lines.each do |line|
       i += 1
       if i > position
         position += 1
