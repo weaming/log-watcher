@@ -35,6 +35,9 @@ module LogWatcher
     getter mapping = {} of String => WatchMux
 
     def watch(file : String, socket : HTTP::WebSocket, position = 0, last = 0)
+      if ENV.has_key? "DEBUG"
+        puts "got position #{position}, last #{last}"
+      end
       file = Path.posix(file).expand.to_s
 
       # send exists log
