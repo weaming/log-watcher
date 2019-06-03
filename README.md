@@ -18,3 +18,11 @@ or [cross-complilation](https://crystal-lang.org/reference/syntax_and_semantics/
 log-watcher [<port>]
 log-watcher --help
 ```
+
+## Other
+
+Size of release binary is
+
+```
+2.3M Jun  3 11:30 /usr/local/bin/log-watcher*
+```
